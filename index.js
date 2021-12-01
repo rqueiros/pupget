@@ -24,6 +24,7 @@ function readFromFile(file) {
   fs.readFile(file, async (err, data) => {
     if (err) throw err;
     pupgetInitData = await JSON.parse(data);
+    scrape().catch(console.error);
   });
 }
 
