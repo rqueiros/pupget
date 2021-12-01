@@ -1,4 +1,17 @@
 {
+  "name": "pupget",
+  "version": "1.0.0",
+  "description": "A simple webscrapping package to extract data from a DSL",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rqueiros/pupget.git"
+  },
+  "keywords": [
+    "webscrapping"
+  ],
+  "author": "Ricardo Queirós",
+  "license": "MIT",
   "dependencies": {
     "puppeteer": "^12.0.1"
   }

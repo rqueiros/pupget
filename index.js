@@ -2,55 +2,117 @@ const puppeteer = require("puppeteer");
 const fs = require("fs");
 const path = require("path");
 
-fs.readFile(process.argv[2], async (err, data) => {
-  if (err) throw err;
-  const giveme = JSON.parse(data);
+// Init and output data object
+let pupgetInitData = {},
+  pupgetOutputData = {};
 
-  // Create folder
-  const dir = `${giveme.output.folder}`;
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
+// Starts scraping
+//process.argv[2] ? readFromStdin() : scrape().catch(console.error);
+
+/**
+ * Verifies if the JSON file was passed through standard input
+ */
+function readFromStdin() {
+  fs.readFile(process.argv[2], async (err, data) => {
+    if (err) throw err;
+    pupgetInitData = await JSON.parse(data);
+    scrape().catch(console.error);
+  });
+}
+
+function readFromFile(file) {
+  fs.readFile(file, async (err, data) => {
+    if (err) throw err;
+    pupgetInitData = await JSON.parse(data);
+  });
+}
+
+/**
+ * Read a JSON text with a valid pupget JSON and fed the main pupget object
+ * @param {string} jsonText a valid pupget JSON file
+ */
+function readFromInnerJson(jsonText) {
+  pupgetInitData = JSON.parse(jsonText);
+}
+
+/**
+ * Creates the output folder
+ * @param {string} folder the name of the folder
+ */
+function createOutputFolder(folder) {
+  if (!fs.existsSync(folder)) {
+    fs.mkdirSync(folder);
   }
+}
 
-  const browser = await puppeteer.launch({ headless: true });
+/**
+ * This function will be executed inside the page
+ * @param {string} selector
+ * @returns CSS selector to use in the DOM query
+ */
+function myPageFunction(selector) {
+  // Find the first thing matching our selector on the page
+  const elementNode = document.querySelector(selector);
+  // Get the element's innerHTML
+  const html = elementNode.innerHTML;
+  // Return the innerHTML to the code running in Node
+  return html;
+}
 
-  const page = await browser.newPage();
-  await page.goto(giveme.page);
-
-  const giveme_output = { [giveme.output_field]: {} };
-
-  const hrefs = await page.$$eval(giveme.query, (links) =>
-    links.map((a) => a.href)
-  );
-
-  let id = 0;
-  for (const href of hrefs) {
+/**
+ * Main function
+ */
+async function scrape() {
+  // Create main results folder
+  createOutputFolder(pupgetInitData.output.folder);
+  // Create the browser
+  const browser = await puppeteer.launch();
+  // Main scraping
+  try {
+    // Create a new page (tab) in the browser
     const page = await browser.newPage();
-    await page.goto(href);
-
-    // Run the queries in the each property of giveme index
-    for (const field of giveme.each) {
-      // Find the first h1 on the page
-      const elementHandle = await page.$(field.query);
-      // Get the element's innerHTML as JS handle
-      const jsHandle = await elementHandle.getProperty("innerHTML");
-      // Deserialize our value from the JS handle
-      const plainValue = await jsHandle.jsonValue();
-
-      // Store in output object
-      const giveme_root = giveme_output[giveme.output_field];
-      giveme_root[field.output_field] = plainValue;
+    // Go to base page
+    await page.goto(pupgetInitData.base_page);
+    // Main steps cycle
+    for (const step of pupgetInitData.steps) {
+      if (step.query.results) {
+        const hrefs = await page.$$eval(step.query.query, (links) =>
+          links.map((a) => a.href)
+        );
+        let id = 0;
+        for (const href of hrefs) {
+          pupgetOutputData = { [step.query.output_field]: {} };
+          const page = await browser.newPage();
+          await page.goto(href);
+          const pupgetRoot = pupgetOutputData[step.query.output_field];
+          for (const field of step.query.results) {
+            pupgetRoot[field.output_field] = await page.evaluate(
+              myPageFunction,
+              field.query
+            );
+          }
+          // Save file
+          fs.writeFileSync(
+            path.join(
+              __dirname,
+              pupgetInitData.output.folder,
+              `${pupgetInitData.output.filename}${id++}.json`
+            ),
+            JSON.stringify(pupgetOutputData)
+          );
+        }
+      }
     }
-
-    // Save file
-    fs.writeFileSync(
-      path.join(
-        __dirname,
-        giveme.output.folder,
-        `${giveme.output.filename}${id++}.json`
-      ),
-      JSON.stringify(giveme_output)
-    );
+    // Catch and log errors
+  } catch (error) {
+    // Handle errors
+    console.error(error);
+  } finally {
+    // Always close the browser
+    await browser.close();
   }
-  await browser.close();
-});
+}
+
+exports.readFromFile = readFromFile;
+exports.readFromInnerJson = readFromInnerJson;
+exports.scrape = scrape;

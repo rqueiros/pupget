@@ -1,0 +1,39 @@
+{
+    "base_page": "https://acm.timus.ru/problemset.aspx?space=1&page=all",
+    "output": {
+        "folder": "exercises",
+        "filename": "exercise_",
+        "autoid": "true"
+    },
+    "steps": [{
+        "page": "",
+        "auth": "false",
+        "query": {
+            "query": "td.name a",
+            "inject_text": "",
+            "clickable": "false",
+            "output_field": "exercise",
+            "results": [{
+                    "query": "h2",
+                    "output_field": "title"
+                },
+                {
+                    "query": ".problem_limits",
+                    "output_field": "limits"
+                },
+                {
+                    "query": "div.problem_par:nth-of-type(1) div, h3:nth-of-type(1), div.problem_par:nth-of-type(2) div, h3:nth-of-type(2), div:nth-of-type(3) div",
+                    "output_field": "description"
+                },
+                {
+                    "query": ".sample td:nth-of-type(1) pre",
+                    "output_field": "input"
+                },
+                {
+                    "query": ".sample td:nth-of-type(2) pre",
+                    "output_field": "output"
+                }
+            ]
+        }
+    }]
+}
