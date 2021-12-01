@@ -15,8 +15,11 @@ npm install pupget
 ```javascript
 const pupget = require("pupget");
 
-// Load DSL
-pupget.readFromFile("pupget.json");
+// Load default DSL
+const filename = require.resolve("pupget/pupget.json");
+pupget.readFromFile(filename);
+
+// Load DSL as string
 pupget.readFrominnerJson("{...}");
 
 // Scraping (if DSL created from scratch)
