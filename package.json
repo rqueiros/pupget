@@ -1,6 +1,6 @@
 {
   "name": "pupget",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A simple webscrapping package to extract data from a DSL",
   "main": "index.js",
   "repository": {

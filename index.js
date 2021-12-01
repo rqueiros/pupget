@@ -95,7 +95,6 @@ async function scrape() {
           // Save file
           fs.writeFileSync(
             path.join(
-              __dirname,
               pupgetInitData.output.folder,
               `${pupgetInitData.output.filename}${id++}.json`
             ),
