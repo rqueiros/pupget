@@ -4,7 +4,7 @@ Pupget is a Node library for scraping the Web based on a DSL definition.
 
 ## Installation
 
-Use the package manager [npm](https://www.npmjs.com/) to install foobar.
+Use the package manager [npm](https://www.npmjs.com/) to install pupget.
 
 ```bash
 npm install pupget
@@ -15,11 +15,11 @@ npm install pupget
 ```javascript
 const pupget = require("pupget");
 
-# load DSL
+// Load DSL
 pupget.readFromFile('pupget.json')
 pupget.readFrominnerJson('{...}')
 
-# scraping
+// Scraping
 pupget.scrape())
 
 ```
