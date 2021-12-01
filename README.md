@@ -1,21 +1,35 @@
-# pupget
+# Pupget
 
-## Steps
+Pupget is a Node library for scraping the Web based on a DSL definition.
 
-1. Open a new folder and initialize a package.json by using the command:
+## Installation
 
-npm init -y
+Use the package manager [npm](https://www.npmjs.com/) to install foobar.
 
-2. Install our published npm package.
+```bash
+npm install pupget
+```
 
-npm i pupget
+## Usage
 
-3. Create an index.js file and let’s code.
+```javascript
+const pupget = require("pupget");
 
-const pupget = require("pupget"); // import the installed package
+# load DSL
+pupget.readFromFile('pupget.json')
+pupget.readFrominnerJson('{...}')
 
-4. Run this file by using the command:
+# scraping
+pupget.scrape())
 
-node index.js
+```
 
-The output data from our NPM package would be stored in the same folder. Don't forget to create the DSL file. The possibilities are endless.
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+
+[MIT](https://choosealicense.com/licenses/mit/)
